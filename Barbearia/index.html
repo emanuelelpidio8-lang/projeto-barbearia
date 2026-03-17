@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Barbearia do Brenel</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            background: #0f1117;
+            color: #e2e8f0;
+            font-family: 'Inter', sans-serif;
+            padding: 20px;
+        }
+        .header {
+            background: linear-gradient(135deg, #1a1d27 0%, #f11111 100%);
+            padding: 32px 40px;
+            border-radius: 20px;
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        .header h1 {
+            font-size: 32px;
+            background: linear-gradient(to right, #fff, #ffcccc);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .header h1 span {
+            color: #ff5555;
+            -webkit-text-fill-color: #ff5555;
+        }
+        .servicos {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        .card {
+            background: #1a1d27;
+            border: 1px solid #2d3142;
+            border-radius: 16px;
+            padding: 24px;
+            transition: transform 0.2s, border-color 0.2s;
+        }
+        .card:hover {
+            transform: translateY(-4px);
+            border-color: #f11111;
+        }
+        .card h2 {
+            color: #f59e0b;
+            font-size: 24px;
+            margin-bottom: 8px;
+        }
+        .preco {
+            font-size: 28px;
+            font-weight: 700;
+            color: #3dd68c;
+            margin: 12px 0;
+        }
+        .descricao {
+            color: #94a3b8;
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+        .botao-agendar {
+            background: transparent;
+            border: 2px solid #f11111;
+            color: #f11111;
+            padding: 12px 24px;
+            border-radius: 30px;
+            font-weight: 600;
+            font-size: 16px;
+            cursor: pointer;
+            width: 100%;
+            transition: all 0.3s;
+        }
+        .botao-agendar:hover {
+            background: #f11111;
+            color: white;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        .modal-content {
+            background: #1a1d27;
+            padding: 30px;
+            border-radius: 20px;
+            max-width: 400px;
+            width: 90%;
+            border: 1px solid #f11111;
+        }
+        .modal-content h3 {
+            color: #f59e0b;
+            margin-bottom: 20px;
+        }
+        .modal-content input {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            background: #0f1117;
+            border: 1px solid #2d3142;
+            border-radius: 8px;
+            color: white;
+        }
+        .modal-botoes {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        .modal-botoes button {
+            flex: 1;
+            padding: 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+        .confirmar {
+            background: #3dd68c;
+            border: none;
+            color: #0f1117;
+        }
+        .cancelar {
+            background: transparent;
+            border: 1px solid #f87171;
+            color: #f87171;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div>
+            <h1>Barbearia do <span>Brenel</span></h1>
+            <p>✦ Agendamento online - Escolha seu serviço</p>
+        </div>
+        <div>
+            <span class="tag" style="background: rgba(245,158,11,0.15); color: #f59e0b; padding: 8px 16px; border-radius: 30px;">
+                ⚡ Aberto agora
+            </span>
+        </div>
+    </div>
+
+    <div class="servicos">
+        <!-- Corte Masculino -->
+        <div class="card">
+            <h2>Corte Masculino</h2>
+            <div class="preco">R$ 45,00</div>
+            <p class="descricao">Corte completo com tesoura e máquina, finalização com pomada.</p>
+            <button class="botao-agendar" onclick="abrirModal('Corte Masculino', 45)">Agendar</button>
+        </div>
+
+        <!-- Barba -->
+        <div class="card">
+            <h2>Barba</h2>
+            <div class="preco">R$ 35,00</div>
+            <p class="descricao">Design de barba com toalha quente e óleo relaxante.</p>
+            <button class="botao-agendar" onclick="abrirModal('Barba', 35)">Agendar</button>
+        </div>
+
+        <!-- Platinado -->
+        <div class="card">
+            <h2>Platinado</h2>
+            <div class="preco">R$ 120,00</div>
+            <p class="descricao">Descoloração completa com técnica avançada.</p>
+            <button class="botao-agendar" onclick="abrirModal('Platinado', 120)">Agendar</button>
+        </div>
+
+        <!-- Sobrancelha -->
+        <div class="card">
+            <h2>Sobrancelha</h2>
+            <div class="preco">R$ 15,00</div>
+            <p class="descricao">Design e correção com cera ou pinça.</p>
+            <button class="botao-agendar" onclick="abrirModal('Sobrancelha', 15)">Agendar</button>
+        </div>
+    </div>
+
+    <!-- Modal de Agendamento -->
+    <div id="modal" class="modal">
+        <div class="modal-content">
+            <h3 id="modal-titulo">Agendar Serviço</h3>
+            <input type="text" id="nome" placeholder="Seu nome" required>
+            <input type="text" id="telefone" placeholder="WhatsApp" required>
+            <input type="date" id="data" required>
+            <select id="horario" style="width:100%; padding:12px; margin:10px 0; background:#0f1117; border:1px solid #2d3142; border-radius:8px; color:white;">
+                <option>09:00</option>
+                <option>10:00</option>
+                <option>11:00</option>
+                <option>14:00</option>
+                <option>15:00</option>
+                <option>16:00</option>
+                <option>17:00</option>
+            </select>
+            <div class="modal-botoes">
+                <button class="confirmar" onclick="confirmarAgendamento()">Confirmar</button>
+                <button class="cancelar" onclick="fecharModal()">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let servicoAtual = '';
+        let precoAtual = 0;
+
+        function abrirModal(servico, preco) {
+            servicoAtual = servico;
+            precoAtual = preco;
+            document.getElementById('modal-titulo').innerText = `Agendar ${servico} - R$ ${preco}`;
+            document.getElementById('modal').style.display = 'flex';
+        }
+
+        function fecharModal() {
+            document.getElementById('modal').style.display = 'none';
+        }
+
+        function confirmarAgendamento() {
+            const nome = document.getElementById('nome').value;
+            const telefone = document.getElementById('telefone').value;
+            const data = document.getElementById('data').value;
+            const horario = document.getElementById('horario').value;
+
+            if (!nome || !telefone || !data) {
+                alert('Por favor, preencha todos os campos!');
+                return;
+            }
+
+            // Aqui você pode salvar no localStorage por enquanto
+            const agendamentos = JSON.parse(localStorage.getItem('agendamentos') || '[]');
+            agendamentos.push({
+                servico: servicoAtual,
+                preco: precoAtual,
+                nome,
+                telefone,
+                data,
+                horario,
+                dataAgendamento: new Date().toISOString()
+            });
+            localStorage.setItem('agendamentos', JSON.stringify(agendamentos));
+
+            alert(`Agendamento confirmado!\n${servicoAtual} - ${data} às ${horario}\nEntraremos em contato via WhatsApp.`);
+            fecharModal();
+            
+            // Limpar campos
+            document.getElementById('nome').value = '';
+            document.getElementById('telefone').value = '';
+            document.getElementById('data').value = '';
+        }
+
+        // Fechar modal clicando fora
+        window.onclick = function(event) {
+            const modal = document.getElementById('modal');
+            if (event.target == modal) {
+                fecharModal();
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Barbearia do Brenel</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            background: #0f1117;
+            color: #e2e8f0;
+            font-family: 'Inter', sans-serif;
+        }
+        .login-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #1a1d27 0%, #0f1117 100%);
+        }
+        .login-box {
+            background: #1a1d27;
+            border: 1px solid #f11111;
+            border-radius: 20px;
+            padding: 40px;
+            width: 100%;
+            max-width: 400px;
+        }
+        .login-box h2 {
+            color: #f59e0b;
+            margin-bottom: 30px;
+            text-align: center;
+            font-size: 28px;
+        }
+        .login-box input {
+            width: 100%;
+            padding: 15px;
+            margin: 10px 0;
+            background: #0f1117;
+            border: 1px solid #2d3142;
+            border-radius: 10px;
+            color: white;
+            font-size: 16px;
+        }
+        .login-box button {
+            width: 100%;
+            padding: 15px;
+            background: #f11111;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: background 0.3s;
+        }
+        .login-box button:hover {
+            background: #d00;
+        }
+        .erro-login {
+            color: #f87171;
+            text-align: center;
+            margin-top: 15px;
+            display: none;
+        }
+        
+        /* Painel principal (inicialmente escondido) */
+        .painel {
+            display: none;
+            padding: 20px;
+        }
+        .painel.ativo {
+            display: block;
+        }
+        .header-admin {
+            background: linear-gradient(135deg, #1a1d27 0%, #f11111 100%);
+            padding: 20px 30px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        .header-admin h1 {
+            font-size: 24px;
+            background: linear-gradient(to right, #fff, #ffcccc);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .header-admin button {
+            background: rgba(255,255,255,0.1);
+            border: 1px solid #fff;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .stat-card {
+            background: #1a1d27;
+            border: 1px solid #2d3142;
+            border-radius: 15px;
+            padding: 20px;
+        }
+        .stat-card h3 {
+            color: #94a3b8;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+        .stat-card .numero {
+            font-size: 32px;
+            font-weight: 700;
+            color: #f59e0b;
+        }
+        .agendamentos-lista {
+            background: #1a1d27;
+            border: 1px solid #2d3142;
+            border-radius: 15px;
+            padding: 20px;
+        }
+        .agendamentos-lista h2 {
+            color: #f59e0b;
+            margin-bottom: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th {
+            text-align: left;
+            padding: 15px 10px;
+            color: #94a3b8;
+            font-weight: 500;
+            border-bottom: 1px solid #2d3142;
+        }
+        td {
+            padding: 15px 10px;
+            border-bottom: 1px solid #2d3142;
+        }
+        .status {
+            display: inline-block;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .status-pendente {
+            background: rgba(245,158,11,0.15);
+            color: #f59e0b;
+        }
+        .status-confirmado {
+            background: rgba(61,214,140,0.15);
+            color: #3dd68c;
+        }
+        .status-cancelado {
+            background: rgba(248,113,113,0.15);
+            color: #f87171;
+        }
+        .acoes button {
+            background: transparent;
+            border: 1px solid #2d3142;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-right: 5px;
+        }
+        .acoes button.confirmar {
+            border-color: #3dd68c;
+            color: #3dd68c;
+        }
+        .acoes button.cancelar {
+            border-color: #f87171;
+            color: #f87171;
+        }
+        .abas {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .aba {
+            padding: 10px 20px;
+            background: #1a1d27;
+            border: 1px solid #2d3142;
+            border-radius: 10px;
+            cursor: pointer;
+            color: #94a3b8;
+        }
+        .aba.ativa {
+            background: #f11111;
+            color: white;
+            border-color: #f11111;
+        }
+        .servico-item {
+            background: #1a1d27;
+            border: 1px solid #2d3142;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .servico-info h4 {
+            color: #f59e0b;
+            margin-bottom: 5px;
+        }
+        .servico-info p {
+            color: #94a3b8;
+            font-size: 14px;
+        }
+        .servico-preco {
+            font-size: 20px;
+            font-weight: 700;
+            color: #3dd68c;
+        }
+        .btn-editar {
+            background: transparent;
+            border: 1px solid #4f8ef7;
+            color: #4f8ef7;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-left: 10px;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        .modal-content {
+            background: #1a1d27;
+            padding: 30px;
+            border-radius: 20px;
+            max-width: 500px;
+            width: 90%;
+            border: 1px solid #f11111;
+        }
+        .modal-content h3 {
+            color: #f59e0b;
+            margin-bottom: 20px;
+        }
+        .modal-content input, .modal-content textarea, .modal-content select {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            background: #0f1117;
+            border: 1px solid #2d3142;
+            border-radius: 8px;
+            color: white;
+        }
+        .modal-botoes {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        .modal-botoes button {
+            flex: 1;
+            padding: 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+        .salvar {
+            background: #3dd68c;
+            border: none;
+            color: #0f1117;
+        }
+        .fechar {
+            background: transparent;
+            border: 1px solid #f87171;
+            color: #f87171;
+        }
+    </style>
+</head>
+<body>
+    <!-- Tela de Login -->
+    <div id="login-container" class="login-container">
+        <div class="login-box">
+            <h2>🔐 Área do Brenel</h2>
+            <input type="text" id="usuario" placeholder="Usuário" value="admin">
+            <input type="password" id="senha" placeholder="Senha" value="123456">
+            <button onclick="fazerLogin()">Entrar no Painel</button>
+            <div id="erro-login" class="erro-login">Usuário ou senha incorretos!</div>
+        </div>
+    </div>
+
+    <!-- Painel Principal (aparece após login) -->
+    <div id="painel" class="painel">
+        <div class="header-admin">
+            <div>
+                <h1>✂️ Painel da Barbearia do Brenel</h1>
+                <p style="color: #94a3b8; margin-top: 5px;">Gerencie agendamentos e serviços</p>
+            </div>
+            <button onclick="logout()">Sair</button>
+        </div>
+
+        <!-- Abas de navegação -->
+        <div class="abas">
+            <div class="aba ativa" onclick="mudarAba('agendamentos')">📅 Agendamentos</div>
+            <div class="aba" onclick="mudarAba('servicos')">✂️ Serviços</div>
+            <div class="aba" onclick="mudarAba('estatisticas')">📊 Estatísticas</div>
+        </div>
+
+        <!-- Conteúdo das Abas -->
+        <div id="conteudo-aba"></div>
+    </div>
+
+    <!-- Modal para editar serviço -->
+    <div id="modal-servico" class="modal">
+        <div class="modal-content">
+            <h3 id="modal-titulo">Editar Serviço</h3>
+            <input type="text" id="servico-nome" placeholder="Nome do serviço">
+            <input type="number" id="servico-preco" placeholder="Preço">
+            <textarea id="servico-descricao" placeholder="Descrição" rows="3"></textarea>
+            <div class="modal-botoes">
+                <button class="salvar" onclick="salvarServico()">Salvar</button>
+                <button class="fechar" onclick="fecharModalServico()">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ==================== DADOS SIMULADOS ====================
+        let agendamentos = [
+            { id: 1, servico: "Corte Masculino", nome: "João Silva", telefone: "11988887777", data: "2026-03-15", horario: "14:00", status: "pendente" },
+            { id: 2, servico: "Barba", nome: "Pedro Santos", telefone: "11977776666", data: "2026-03-15", horario: "15:30", status: "confirmado" },
+            { id: 3, servico: "Platinado", nome: "Carlos Oliveira", telefone: "11966665555", data: "2026-03-16", horario: "10:00", status: "pendente" },
+            { id: 4, servico: "Corte Masculino", nome: "Lucas Mendes", telefone: "11955554444", data: "2026-03-16", horario: "16:00", status: "cancelado" },
+        ];
+
+        let servicos = [
+            { id: 1, nome: "Corte Masculino", preco: 45, descricao: "Corte completo com tesoura e máquina" },
+            { id: 2, nome: "Barba", preco: 35, descricao: "Design de barba com toalha quente" },
+            { id: 3, nome: "Platinado", preco: 120, descricao: "Descoloração completa" },
+            { id: 4, nome: "Sobrancelha", preco: 15, descricao: "Design e correção" },
+        ];
+
+        let servicoEditando = null;
+
+        // ==================== LOGIN ====================
+        function fazerLogin() {
+            const usuario = document.getElementById('usuario').value;
+            const senha = document.getElementById('senha').value;
+            
+            // Login simples (depois você pode trocar por autenticação real)
+            if (usuario === 'brenel' || (usuario === 'admin' && senha === '123456')) {
+                document.getElementById('login-container').style.display = 'none';
+                document.getElementById('painel').classList.add('ativo');
+                carregarAba('agendamentos');
+            } else {
+                document.getElementById('erro-login').style.display = 'block';
+            }
+        }
+
+        function logout() {
+            document.getElementById('login-container').style.display = 'flex';
+            document.getElementById('painel').classList.remove('ativo');
+        }
+
+        // ==================== NAVEGAÇÃO ====================
+        function mudarAba(aba) {
+            // Atualizar abas visuais
+            document.querySelectorAll('.aba').forEach(el => el.classList.remove('ativa'));
+            event.target.classList.add('ativa');
+            
+            carregarAba(aba);
+        }
+
+        function carregarAba(aba) {
+            if (aba === 'agendamentos') {
+                mostrarAgendamentos();
+            } else if (aba === 'servicos') {
+                mostrarServicos();
+            } else if (aba === 'estatisticas') {
+                mostrarEstatisticas();
+            }
+        }
+
+        // ==================== AGENDAMENTOS ====================
+        function mostrarAgendamentos() {
+            const conteudo = document.getElementById('conteudo-aba');
+            
+            let html = `
+                <div class="stats">
+                    <div class="stat-card">
+                        <h3>Total hoje</h3>
+                        <div class="numero">${agendamentos.filter(a => a.data === new Date().toISOString().split('T')[0]).length}</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Pendentes</h3>
+                        <div class="numero">${agendamentos.filter(a => a.status === 'pendente').length}</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Confirmados</h3>
+                        <div class="numero">${agendamentos.filter(a => a.status === 'confirmado').length}</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Faturamento hoje</h3>
+                        <div class="numero">R$ ${calcularFaturamentoHoje()}</div>
+                    </div>
+                </div>
+                
+                <div class="agendamentos-lista">
+                    <h2>📋 Todos os Agendamentos</h2>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Cliente</th>
+                                <th>Serviço</th>
+                                <th>Data/Hora</th>
+                                <th>Telefone</th>
+                                <th>Status</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+            `;
+
+            agendamentos.forEach(ag => {
+                html += `
+                    <tr>
+                        <td>${ag.nome}</td>
+                        <td>${ag.servico}</td>
+                        <td>${formatarData(ag.data)} às ${ag.horario}</td>
+                        <td>${ag.telefone}</td>
+                        <td><span class="status status-${ag.status}">${ag.status}</span></td>
+                        <td class="acoes">
+                            <button class="confirmar" onclick="alterarStatus(${ag.id}, 'confirmado')">✓</button>
+                            <button class="cancelar" onclick="alterarStatus(${ag.id}, 'cancelado')">✗</button>
+                        </td>
+                    </tr>
+                `;
+            });
+
+            html += `</tbody></table></div>`;
+            conteudo.innerHTML = html;
+        }
+
+        function alterarStatus(id, novoStatus) {
+            const agendamento = agendamentos.find(a => a.id === id);
+            if (agendamento) {
+                agendamento.status = novoStatus;
+                mostrarAgendamentos(); // Recarrega a lista
+                alert(`Agendamento ${novoStatus} com sucesso!`);
+            }
+        }
+
+        function calcularFaturamentoHoje() {
+            const hoje = new Date().toISOString().split('T')[0];
+            let total = 0;
+            
+            agendamentos.forEach(ag => {
+                if (ag.data === hoje && ag.status === 'confirmado') {
+                    const servico = servicos.find(s => s.nome === ag.servico);
+                    if (servico) total += servico.preco;
+                }
+            });
+            
+            return total;
+        }
+
+        // ==================== SERVIÇOS ====================
+        function mostrarServicos() {
+            const conteudo = document.getElementById('conteudo-aba');
+            
+            let html = `
+                <div style="margin-bottom: 20px;">
+                    <button class="aba" style="background: #3dd68c; color: #0f1117;" onclick="abrirModalNovoServico()">+ Novo Serviço</button>
+                </div>
+                <div class="servicos-lista">
+            `;
+
+            servicos.forEach(serv => {
+                html += `
+                    <div class="servico-item">
+                        <div class="servico-info">
+                            <h4>${serv.nome}</h4>
+                            <p>${serv.descricao}</p>
+                        </div>
+                        <div style="display: flex; align-items: center;">
+                            <span class="servico-preco">R$ ${serv.preco}</span>
+                            <button class="btn-editar" onclick="abrirModalEditarServico(${serv.id})">Editar</button>
+                        </div>
+                    </div>
+                `;
+            });
+
+            html += `</div>`;
+            conteudo.innerHTML = html;
+        }
+
+        function abrirModalNovoServico() {
+            servicoEditando = null;
+            document.getElementById('modal-titulo').innerText = 'Novo Serviço';
+            document.getElementById('servico-nome').value = '';
+            document.getElementById('servico-preco').value = '';
+            document.getElementById('servico-descricao').value = '';
+            document.getElementById('modal-servico').style.display = 'flex';
+        }
+
+        function abrirModalEditarServico(id) {
+            const servico = servicos.find(s => s.id === id);
+            if (servico) {
+                servicoEditando = servico;
+                document.getElementById('modal-titulo').innerText = 'Editar Serviço';
+                document.getElementById('servico-nome').value = servico.nome;
+                document.getElementById('servico-preco').value = servico.preco;
+                document.getElementById('servico-descricao').value = servico.descricao;
+                document.getElementById('modal-servico').style.display = 'flex';
+            }
+        }
+
+        function salvarServico() {
+            const nome = document.getElementById('servico-nome').value;
+            const preco = parseFloat(document.getElementById('servico-preco').value);
+            const descricao = document.getElementById('servico-descricao').value;
+
+            if (!nome || !preco || !descricao) {
+                alert('Preencha todos os campos!');
+                return;
+            }
+
+            if (servicoEditando) {
+                // Editando existente
+                servicoEditando.nome = nome;
+                servicoEditando.preco = preco;
+                servicoEditando.descricao = descricao;
+                alert('Serviço atualizado com sucesso!');
+            } else {
+                // Novo serviço
+                const novoId = Math.max(...servicos.map(s => s.id)) + 1;
+                servicos.push({
+                    id: novoId,
+                    nome,
+                    preco,
+                    descricao
+                });
+                alert('Serviço criado com sucesso!');
+            }
+
+            fecharModalServico();
+            mostrarServicos(); // Recarrega a lista
+        }
+
+        function fecharModalServico() {
+            document.getElementById('modal-servico').style.display = 'none';
+        }
+
+        // ==================== ESTATÍSTICAS ====================
+        function mostrarEstatisticas() {
+            const conteudo = document.getElementById('conteudo-aba');
+            
+            // Contar serviços mais pedidos
+            const contagemServicos = {};
+            agendamentos.forEach(ag => {
+                if (ag.status === 'confirmado') {
+                    contagemServicos[ag.servico] = (contagemServicos[ag.servico] || 0) + 1;
+                }
+            });
+
+            let servicosHtml = '';
+            for (let [servico, quantidade] of Object.entries(contagemServicos)) {
+                servicosHtml += `<li>${servico}: ${quantidade} agendamentos</li>`;
+            }
+
+            html = `
+                <div class="stats">
+                    <div class="stat-card">
+                        <h3>Total de agendamentos</h3>
+                        <div class="numero">${agendamentos.length}</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Confirmados</h3>
+                        <div class="numero">${agendamentos.filter(a => a.status === 'confirmado').length}</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Cancelados</h3>
+                        <div class="numero">${agendamentos.filter(a => a.status === 'cancelado').length}</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Faturamento total</h3>
+                        <div class="numero">R$ ${calcularFaturamentoTotal()}</div>
+                    </div>
+                </div>
+
+                <div class="agendamentos-lista" style="margin-top: 20px;">
+                    <h2>📊 Serviços mais procurados</h2>
+                    <ul style="list-style: none; padding: 20px;">
+                        ${servicosHtml || '<li>Nenhum serviço confirmado ainda</li>'}
+                    </ul>
+                </div>
+            `;
+            
+            conteudo.innerHTML = html;
+        }
+
+        function calcularFaturamentoTotal() {
+            let total = 0;
+            agendamentos.forEach(ag => {
+                if (ag.status === 'confirmado') {
+                    const servico = servicos.find(s => s.nome === ag.servico);
+                    if (servico) total += servico.preco;
+                }
+            });
+            return total;
+        }
+
+        // ==================== UTILITÁRIOS ====================
+        function formatarData(data) {
+            const [ano, mes, dia] = data.split('-');
+            return `${dia}/${mes}/${ano}`;
+        }
+
+        // Fechar modal clicando fora
+        window.onclick = function(event) {
+            const modal = document.getElementById('modal-servico');
+            if (event.target == modal) {
+                fecharModalServico();
+            }
+        }
+    </script>
+</body>
+</html>
